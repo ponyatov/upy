@@ -12,10 +12,10 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 def t_OP(t):
     r'[=+*]'
-    t.value = Sym(t.value) ; return t
+    t.value = Op(t.value) ; return t
 def t_NUM(t):
     r'[0-9]+(\.[0-9]*)?([eE][\+\-]?[0-9]+)?'
-    t.value = Sym(t.value) ; return t
+    t.value = Num(float(t.value)) ; return t
 def t_SYM(t):
     r'[a-zA-Z0-9_]+'
     t.value = Sym(t.value) ; return t
