@@ -3,7 +3,10 @@ import ply.lex  as lex
 import ply.yacc as yacc
 from sym import *
 
-tokens = [ 'SYM' , 'NUM' , 'EQ','ADD','MUL' ]
+tokens = [ 'SYM' , 'NUM' ,
+          'LP', 'RP', 'LC', 'RC',
+          'EQ', 'COLON',
+          'ADD', 'MUL' ]
 
 t_ignore = ' \t\r'
 t_ignore_comment = '\#.*'
@@ -11,9 +14,26 @@ def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+def t_LP(t):
+    r'\('
+    t.value = Op(t.value) ; return t
+def t_RP(t):
+    r'\)'
+    t.value = Op(t.value) ; return t
+def t_LC(t):
+    r'\{'
+    t.value = Op(t.value) ; return t
+def t_RC(t):
+    r'\}'
+    t.value = Op(t.value) ; return t
+
 def t_EQ(t):
     r'\='
     t.value = Op(t.value) ; return t
+def t_COLON(t):
+    r'\:'
+    t.value = Op(t.value) ; return t
+
 def t_ADD(t):
     r'\+'
     t.value = Op(t.value) ; return t
@@ -50,6 +70,23 @@ def p_scalar_num(p):
     ' scalar : NUM '
     p[0] = p[1]
 
+def p_parens(p):
+    ' ex : LP ex RP '
+    p[0] = p[2]
+    
+def p_ex_lambda(p):
+    ' ex : LC lambda RC '
+    p[0] = p[2]
+def p_lambda_new(p):
+    ' lambda : '
+    p[0] = Fn('')
+def p_lambda_var(p):
+    ' lambda : lambda SYM COLON '
+    p[0] = p[1] ; p[0] % p[2]
+def p_lambda_ex(p):
+    ' lambda : lambda ex '
+    p[0] = p[1] ; p[0] += p[2]
+    
 def p_eq(p):
     ' ex : ex EQ ex '
     p[0] = p[2] ; p[0] += p[1] ; p[0] += p[3]

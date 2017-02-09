@@ -2,6 +2,7 @@ class Sym:
     tag = 'sym'
     def __init__(self, V): self.val = V ; self.nest = [] ; self.attr = {}
     def __iadd__(self, o): self.nest.append(o) ; return self
+    def __mod__(self, o): self.attr[o.val] = o; return self
     def __repr__(self): return self.head()
     def head(self):
         return '<%s:%s> @%s' % (self.tag, self.val, id(self))
@@ -15,3 +16,4 @@ class Sym:
 class Num(Sym): tag = 'num'
 class Str(Sym): tag = 'str'
 class Op(Sym):  tag = 'op'
+class Fn(Sym):  tag = 'fn'
